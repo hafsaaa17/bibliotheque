@@ -1,0 +1,57 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Auteur;
+use Illuminate\Http\Request;
+
+class AuteurController extends Controller
+{
+    public function index()
+    {
+        $auteurs = Auteur::paginate(10);
+        return view('auteurs.index', compact('auteurs'));
+    }
+
+    public function create()
+    {
+        return view('auteurs.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nom' => 'required',
+            'biographie' => 'nullable'
+        ]);
+
+        Auteur::create($request->all());
+
+        return redirect()->route('auteurs.index')->with('success', 'Auteur ajouté avec succès');
+    }
+
+    public function edit($id)
+    {
+        $auteur = Auteur::findOrFail($id);
+        return view('auteurs.edit', compact('auteur'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nom' => 'required',
+            'biographie' => 'nullable'
+        ]);
+
+        $auteur = Auteur::findOrFail($id);
+        $auteur->update($request->all());
+
+        return redirect()->route('auteurs.index')->with('success', 'Auteur modifié avec succès');
+    }
+
+    public function destroy($id)
+    {
+        Auteur::destroy($id);
+        return redirect()->route('auteurs.index')->with('success', 'Auteur supprimé avec succès');
+    }
+}
